@@ -185,19 +185,23 @@ def push_to_turso(predictions):
     # We don't drop the table, just clear the old mock data
     client.execute("DELETE FROM district_forecasts")
     
+    stmts = []
     for p in predictions:
-        client.execute(
-            """
-            INSERT INTO district_forecasts (id, district_name, state, lat, lon, raw_precip_mm, corrected_precip_mm, heavy_rain_prob_65mm, heavy_rain_prob_115mm, category, temperature, humidity, wind_speed)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            [
-                p['id'], p['district_name'], p['state'], p['lat'], p['lon'],
-                p['raw_precip_mm'], p['corrected_precip_mm'],
-                p['heavy_rain_prob_65mm'], p['heavy_rain_prob_115mm'],
-                p['category'], p['temperature'], p['humidity'], p['wind_speed']
-            ]
+        stmts.append(
+            libsql_client.Statement(
+                """
+                INSERT INTO district_forecasts (id, district_name, state, lat, lon, raw_precip_mm, corrected_precip_mm, heavy_rain_prob_65mm, heavy_rain_prob_115mm, category, temperature, humidity, wind_speed)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                [
+                    p['id'], p['district_name'], p['state'], p['lat'], p['lon'],
+                    p['raw_precip_mm'], p['corrected_precip_mm'],
+                    p['heavy_rain_prob_65mm'], p['heavy_rain_prob_115mm'],
+                    p['category'], p['temperature'], p['humidity'], p['wind_speed']
+                ]
+            )
         )
+    client.batch(stmts)
     print("Database updated! The frontend will now show REAL ML data!")
 
 if __name__ == "__main__":
