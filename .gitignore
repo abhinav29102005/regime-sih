@@ -13,3 +13,5 @@ build/
 *.tif
 .venv/
 __pycache__/
+
+docs/SERVER_MANAGEMENT.md
