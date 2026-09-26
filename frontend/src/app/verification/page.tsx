@@ -16,18 +16,18 @@ export default function Verification() {
 
   return (
     <div className="page-enter">
-      <div style={{ marginBottom: 28, display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 16 }}>
+      <div style={{ marginBottom: 32, display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 20 }}>
         <div>
-          <h1 style={{ fontSize: "1.8rem", fontWeight: 800, letterSpacing: "-0.5px" }}>Verification Metrics</h1>
-          <p style={{ color: "var(--text-2)", fontSize: "0.9rem", marginTop: 4 }}>Skill scores: Raw NWP vs AI-Corrected.</p>
+          <h1 style={{ fontSize: "2.2rem", fontWeight: 800, letterSpacing: "-0.8px" }}>Verification Metrics</h1>
+          <p style={{ color: "var(--text-2)", fontSize: "0.95rem", marginTop: 4 }}>Skill scores: Raw NWP vs AI-Corrected.</p>
         </div>
         <RegimeSwitcher regime={regime} setRegime={setRegime} />
       </div>
       
       {isLoading ? <div className="skel" style={{ height: 400 }} /> : data && (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
-          <motion.div className="glass" style={{ padding: 24 }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-            <h3 style={{ fontSize: "1rem", fontWeight: 700, marginBottom: 16 }}>Continuous Metrics</h3>
+        <div className="dashboard-grid">
+          <motion.div className="glass" style={{ padding: 24, display: "flex", flexDirection: "column" }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+            <h3 className="section-title" style={{ fontSize: "1rem", marginBottom: 20 }}>Continuous Metrics</h3>
             <table className="data-tbl">
               <thead><tr><th>Metric</th><th>Raw</th><th>Corrected</th><th>Change</th></tr></thead>
               <tbody>
@@ -47,46 +47,46 @@ export default function Verification() {
           </motion.div>
 
           <motion.div className="glass" style={{ padding: 24 }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <h3 style={{ fontSize: "1rem", fontWeight: 700, marginBottom: 16 }}>Equitable Threat Score (ETS)</h3>
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={etsData} barGap={6}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(79,195,247,0.06)" vertical={false} />
-                <XAxis dataKey="threshold" tick={{ fill: "var(--text-2)", fontSize: 12 }} axisLine={false} tickLine={false} />
+            <h3 className="section-title" style={{ fontSize: "1rem", marginBottom: 20 }}>Equitable Threat Score (ETS)</h3>
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={etsData} barGap={8} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="threshold" tick={{ fill: "var(--text-2)", fontSize: 12 }} axisLine={false} tickLine={false} dy={10} />
                 <YAxis tick={{ fill: "var(--text-2)", fontSize: 12 }} axisLine={false} tickLine={false} domain={[0, 0.6]} />
-                <Tooltip cursor={{ fill: "rgba(79,195,247,0.05)" }} contentStyle={{ background: "var(--bg-tertiary)", border: "1px solid var(--glass-border)", borderRadius: 8 }} />
-                <Legend iconType="circle" wrapperStyle={{ fontSize: 12, paddingTop: 10 }} />
-                <Bar dataKey="raw" fill="rgba(232,234,246,0.3)" name="Raw NWP" radius={[4, 4, 0, 0]} />
+                <Tooltip cursor={{ fill: "rgba(255,255,255,0.05)" }} contentStyle={{ background: "var(--bg-tertiary)", border: "1px solid var(--glass-border)", borderRadius: 8, color: "#fff" }} itemStyle={{ color: "#fff" }} />
+                <Legend iconType="circle" wrapperStyle={{ fontSize: 12, paddingTop: 20 }} />
+                <Bar dataKey="raw" fill="var(--text-3)" name="Raw NWP" radius={[4, 4, 0, 0]} />
                 <Bar dataKey="corrected" fill="var(--accent)" name="AI-Corrected" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </motion.div>
 
           <motion.div className="glass" style={{ padding: 24 }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-            <h3 style={{ fontSize: "1rem", fontWeight: 700, marginBottom: 16 }}>Fractions Skill Score (≥64.5mm)</h3>
-            <ResponsiveContainer width="100%" height={220}>
-              <LineChart data={fssData} margin={{ top: 5, right: 10, left: -15, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(79,195,247,0.06)" vertical={false} />
-                <XAxis dataKey="neighborhood" tick={{ fill: "var(--text-2)", fontSize: 12 }} axisLine={false} tickLine={false} />
+            <h3 className="section-title" style={{ fontSize: "1rem", marginBottom: 20 }}>Fractions Skill Score (≥64.5mm)</h3>
+            <ResponsiveContainer width="100%" height={250}>
+              <LineChart data={fssData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="neighborhood" tick={{ fill: "var(--text-2)", fontSize: 12 }} axisLine={false} tickLine={false} dy={10} />
                 <YAxis tick={{ fill: "var(--text-2)", fontSize: 12 }} axisLine={false} tickLine={false} domain={[0, 1]} />
-                <Tooltip contentStyle={{ background: "var(--bg-tertiary)", border: "1px solid var(--glass-border)", borderRadius: 8 }} />
-                <ReferenceLine y={0.5} stroke="rgba(232,234,246,0.15)" strokeDasharray="4 4" />
-                <Legend iconType="circle" wrapperStyle={{ fontSize: 12 }} />
-                <Line type="monotone" dataKey="raw" stroke="rgba(232,234,246,0.4)" strokeDasharray="5 5" name="Raw" dot={{ r: 3 }} />
+                <Tooltip contentStyle={{ background: "var(--bg-tertiary)", border: "1px solid var(--glass-border)", borderRadius: 8, color: "#fff" }} itemStyle={{ color: "#fff" }} />
+                <ReferenceLine y={0.5} stroke="rgba(255,255,255,0.2)" strokeDasharray="4 4" />
+                <Legend iconType="circle" wrapperStyle={{ fontSize: 12, paddingTop: 20 }} />
+                <Line type="monotone" dataKey="raw" stroke="var(--text-3)" strokeDasharray="5 5" name="Raw" dot={{ r: 3 }} />
                 <Line type="monotone" dataKey="corrected" stroke="var(--accent)" strokeWidth={3} name="Corrected" dot={{ r: 4, strokeWidth: 2 }} />
               </LineChart>
             </ResponsiveContainer>
           </motion.div>
 
           <motion.div className="glass" style={{ padding: 24 }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-            <h3 style={{ fontSize: "1rem", fontWeight: 700, marginBottom: 16 }}>Reliability Diagram (Heavy Rain)</h3>
-            <ResponsiveContainer width="100%" height={220}>
-              <LineChart data={relData} margin={{ top: 5, right: 10, left: -15, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(79,195,247,0.06)" />
-                <XAxis dataKey="forecast" tick={{ fill: "var(--text-2)", fontSize: 12 }} axisLine={false} tickLine={false} />
+            <h3 className="section-title" style={{ fontSize: "1rem", marginBottom: 20 }}>Reliability Diagram (Heavy Rain)</h3>
+            <ResponsiveContainer width="100%" height={250}>
+              <LineChart data={relData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="forecast" tick={{ fill: "var(--text-2)", fontSize: 12 }} axisLine={false} tickLine={false} dy={10} />
                 <YAxis tick={{ fill: "var(--text-2)", fontSize: 12 }} axisLine={false} tickLine={false} domain={[0, 1]} />
-                <Tooltip contentStyle={{ background: "var(--bg-tertiary)", border: "1px solid var(--glass-border)", borderRadius: 8 }} />
-                <Line type="monotone" dataKey="perfect" stroke="rgba(232,234,246,0.15)" strokeDasharray="4 4" name="Perfect" dot={false} />
-                <Line type="monotone" dataKey="observed" stroke="var(--orange)" strokeWidth={3} name="Corrected Model" dot={{ r: 4, fill: "var(--orange)" }} />
+                <Tooltip contentStyle={{ background: "var(--bg-tertiary)", border: "1px solid var(--glass-border)", borderRadius: 8, color: "#fff" }} itemStyle={{ color: "#fff" }} />
+                <Line type="monotone" dataKey="perfect" stroke="rgba(255,255,255,0.2)" strokeDasharray="4 4" name="Perfect" dot={false} />
+                <Line type="monotone" dataKey="observed" stroke="var(--red)" strokeWidth={3} name="Corrected Model" dot={{ r: 4, fill: "var(--red)" }} />
               </LineChart>
             </ResponsiveContainer>
           </motion.div>

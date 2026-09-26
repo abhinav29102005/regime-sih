@@ -26,10 +26,10 @@ export default function Navbar() {
           <span style={{ fontSize: '1.6rem' }}>🌧️</span>
           <div>
             <div style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--accent)', letterSpacing: '-0.3px', lineHeight: 1.2 }}>
-              REGIME-SIH
+              MeghDrishti
             </div>
             <div style={{ fontSize: '0.65rem', color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-              Monsoon AI
+              Vision into every cloud's regime.
             </div>
           </div>
         </div>
