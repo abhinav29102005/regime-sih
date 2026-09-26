@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Query
 
-from api.mock_data import mock_verification_summary
+from api.database import fetch_verification_summary
 from shared.schemas import VerificationSummary
 
 router = APIRouter()
@@ -13,4 +13,4 @@ def get_verification_summary(
     regime: str = Query("active", description="Regime to filter verification by"),
 ):
     """Get verification metrics (raw vs corrected) for a regime."""
-    return mock_verification_summary(regime)
+    return fetch_verification_summary(regime)

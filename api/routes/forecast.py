@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Query
 
-from api.mock_data import mock_district_forecasts
+from api.database import fetch_district_forecasts
 from shared.schemas import DistrictForecast
 
 router = APIRouter()
@@ -14,7 +14,7 @@ def get_district_forecast(
     lead: int = Query(24, description="Lead time in hours"),
 ):
     """Get district-level corrected rainfall forecasts."""
-    return mock_district_forecasts(lead)
+    return fetch_district_forecasts(lead)
 
 
 @router.get("/grid")
@@ -33,7 +33,7 @@ def get_heavy_rain_prob(
     threshold: float = Query(64.5, description="Rainfall threshold in mm"),
 ):
     """Get per-district heavy rain exceedance probabilities."""
-    forecasts = mock_district_forecasts(24)
+    forecasts = fetch_district_forecasts(24)
     return [
         {
             "district_id": f.district_id,

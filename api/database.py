@@ -15,7 +15,7 @@ TOKEN = os.environ.get("TURSO_TOKEN", "")
 def get_db_client():
     return libsql_client.create_client_sync(url=URL, auth_token=TOKEN)
 
-def mock_regime_current() -> RegimeOutput:
+def fetch_regime_current() -> RegimeOutput:
     """Fetch the most recent regime from the database."""
     try:
         client = get_db_client()
@@ -39,7 +39,7 @@ def mock_regime_current() -> RegimeOutput:
         # Fallback if DB fails
         return RegimeOutput(date=datetime.now(), regime="normal", probabilities={"normal": 1.0})
 
-def mock_regime_history(start: str, end: str) -> list[RegimeOutput]:
+def fetch_regime_history(start: str, end: str) -> list[RegimeOutput]:
     """Fetch historical regimes from the database."""
     try:
         client = get_db_client()
@@ -63,9 +63,9 @@ def mock_regime_history(start: str, end: str) -> list[RegimeOutput]:
         print(f"Turso DB Error in regime_history: {e}")
         return []
 
-def mock_district_forecasts(lead_hours: int = 24) -> list[DistrictForecast]:
+def fetch_district_forecasts(lead_hours: int = 24) -> list[DistrictForecast]:
     """Fetch real ML forecasts from the database."""
-    regime = mock_regime_current()
+    regime = fetch_regime_current()
     try:
         client = get_db_client()
         rs = client.execute("SELECT * FROM district_forecasts")
@@ -92,10 +92,10 @@ def mock_district_forecasts(lead_hours: int = 24) -> list[DistrictForecast]:
             ))
         return forecasts
     except Exception as e:
-        print(f"Turso DB Error in mock_district_forecasts: {e}")
+        print(f"Turso DB Error in fetch_district_forecasts: {e}")
         return []
 
-def mock_verification_summary(regime: str = "active") -> VerificationSummary:
+def fetch_verification_summary(regime: str = "active") -> VerificationSummary:
     """Fetch actual ML verification metrics from the database."""
     try:
         client = get_db_client()
