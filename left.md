@@ -1,7 +1,7 @@
-# 🅰️ Person A — Remaining Work
+# 🅱️ Person B — Remaining Work
 
-> **Branch:** `feature/data-pipeline`
-> **What's done:** Project structure, shared schemas, ingestion adapters (GFS/CHIRPS/ERA5), feature engineering (regime indices + grid predictors), regime classifier (train + service), quantile mapping baseline.
+> **Branch:** `feature/api-frontend`
+> **What's done:** Shared schemas, docker-compose, FastAPI with mock data (all routes), Vite+React+TS scaffold, design system CSS, API client + React Query hooks, Dashboard page (RegimeIndicator, DistrictTable, DistrictMap, lead-time selector), Verification page (skill scores table, ETS bar chart, FSS curve, reliability diagram).
 > **What's left:** Listed below in priority order.
 
 ---
@@ -10,109 +10,118 @@
 
 | File | Status |
 |---|---|
-| `shared/schemas.py` | ✅ Complete — Pydantic models |
-| `shared/config.py` | ✅ Complete — constants, thresholds, paths |
-| `ingestion/base.py` | ✅ Complete — abstract DataSourceAdapter |
-| `ingestion/gfs_adapter.py` | ✅ Complete — S3 download, GRIB2 parse, bbox subset |
-| `ingestion/chirps_adapter.py` | ✅ Complete — HTTP download, regrid 0.05→0.25° |
-| `ingestion/era5_adapter.py` | ✅ Complete — CDS API for MSLP, 850hPa wind, TCWV |
-| `features/regime_indices.py` | ✅ Complete — BMI, MT_lat, LLJ, OLR, MJO, build_regime_index_table |
-| `features/grid_predictors.py` | ✅ Complete — grid predictor table, district aggregation |
-| `regime_classifier/train.py` | ✅ Complete — bootstrap labels, XGBoost training, class weighting |
-| `regime_classifier/service.py` | ✅ Complete — inference wrapper returning RegimeOutput |
-| `correction/quantile_mapping.py` | ✅ Complete — empirical CDF transfer with zero-rain handling |
+| `shared/schemas.py` | ✅ Pydantic models (identical to PA) |
+| `shared/config.py` | ✅ Constants, thresholds, paths |
+| `docker-compose.yml` | ✅ PostGIS + Redis |
+| `requirements.txt` | ✅ All Python deps |
+| `api/main.py` | ✅ FastAPI app with CORS + routes |
+| `api/mock_data.py` | ✅ Realistic mock data (40 districts, seeded RNG) |
+| `api/routes/regime.py` | ✅ `/current` + `/history` |
+| `api/routes/forecast.py` | ✅ `/district` + `/grid` + `/heavy-rain-prob` |
+| `api/routes/verification.py` | ✅ `/summary` |
+| `api/routes/districts.py` | ✅ `/geojson` |
+| `frontend/src/index.css` | ✅ Full premium dark design system |
+| `frontend/src/api/client.ts` | ✅ Axios + TypeScript types |
+| `frontend/src/hooks/useData.ts` | ✅ React Query hooks |
+| `frontend/src/App.tsx` | ✅ Sidebar nav + page routing |
+| `frontend/src/components/RegimeIndicator.tsx` | ✅ Animated regime badge + probability bar |
+| `frontend/src/components/DistrictTable.tsx` | ✅ Sortable/filterable table |
+| `frontend/src/components/DistrictMap.tsx` | ✅ SVG dot map with color scale |
+| `frontend/src/pages/Dashboard.tsx` | ✅ Stats row + lead selector + table + map |
+| `frontend/src/pages/Verification.tsx` | ✅ Metrics table + ETS bars + FSS curve + reliability diagram |
 
 ---
 
-## 🔲 TODO — Priority 1 (Must Have)
+## 🔲 TODO — Priority 1 (Must Have for Demo)
 
-### 1. `correction/xgboost_correction.py` — Regime-Conditioned XGBoost Correction
+### 1. Upgrade DistrictMap to MapLibre GL (replace SVG dots)
+- Install already done (`maplibre-gl`, `react-map-gl`)
+- Download India admin-2 GeoJSON → `frontend/public/india_districts.geojson`
+  - Source: https://www.geoboundaries.org/ or https://gadm.org/
+  - Simplify with `mapshaper -simplify 10%` if >5MB
+- Replace SVG dot map with real choropleth fill using `react-map-gl/maplibre`
+- District click → popup with forecast details
+- Dark basemap: `https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json`
 
-The core novel contribution. One XGBoost regressor per regime, probability-weighted blending.
+### 2. Loading & Error States
+- Add `.skeleton` loading placeholders to all data-dependent sections
+- Error states with retry buttons
+- "No data" empty states
 
-```python
-# Key implementation points:
-# - Target: residual = P_obs - P_raw (predict the bias, not absolute rainfall)
-# - Feature vector: raw_precip, regime_probs, elevation, dist_to_coast, lead_time, spatial context
-# - Weighted MSE: upweight heavy-rain cases by α=3
-# - Train one model per regime
-# - Blending: P_corrected = Σ_k P(regime=k) × (P_raw + residual_hat_k)
-# - Save models to data/models/correction_{regime}.pkl
-```
-
-### 2. `scripts/download_historical.py` — Data Download Script
-
-```python
-# Download 1 monsoon season (June-Sept 2023) for:
-# - CHIRPS observed rainfall (fastest, no auth)
-# - GFS forecast data from S3
-# - ERA5 regime index variables (may queue 15-30 min)
-# Cache to data/raw/
-```
-
-### 3. `scripts/run_pipeline.py` — End-to-End Pipeline Runner
-
-```python
-# This is what Person B's API will call at integration (Hour 10):
-# 1. Load latest GFS data
-# 2. Compute regime indices → feed to classifier
-# 3. Run regime classifier → RegimeOutput
-# 4. Run bias correction → corrected forecast
-# 5. Aggregate to districts → list[DistrictForecast]
-# 6. Write JSON output for API to serve
-```
+### 3. Polish Animations
+- Card entrance: already has `.animate-in` CSS — ensure all cards use it
+- Number count-up effect on stat values
+- Smooth transitions when switching lead times (map zoom, table re-sort)
 
 ---
 
 ## 🔲 TODO — Priority 2 (Should Have)
 
-### 4. `extremes/heavy_rain_model.py` — Heavy Rain Probability
+### 4. Regime History Timeline Component
+- Horizontal colored bar strip below lead-time selector
+- Past 30 days, each day colored by regime
+- Uses `useRegimeHistory` hook (already built)
 
-```python
-# Binary XGBoost classifiers for thresholds 64.5mm, 115.5mm
-# Features: corrected_precip, regime_probs, ensemble_spread, terrain, climatological P95/P99
-# Loss: binary cross-entropy with inverse-frequency class weighting
-# Post-hoc calibration: isotonic regression
-# Output: {threshold_mm: calibrated_probability}
+### 5. WebSocket for Live Updates
+- Add `WS /api/v1/live` endpoint to FastAPI
+- Push "new forecast cycle available" notifications
+- Frontend: reconnecting WebSocket hook, toast notification
+
+### 6. Responsive Layout
+- Stack table below map on screens <1200px
+- Sidebar → bottom nav on mobile
+- Touch-friendly map interactions
+
+---
+
+## 🔲 TODO — Priority 3 (Integration, Hour 10)
+
+### 7. Replace Mock Data with Real Pipeline
+When Person A merges `feature/data-pipeline` to main:
+
+```bash
+git fetch origin
+git rebase origin/main
 ```
 
-### 5. `verification/metrics.py` — Verification Module
+Then update each route to import from Person A's modules:
 
 ```python
-# Continuous: RMSE, MAE, Bias, correlation (r)
-# Categorical: POD, FAR, CSI, ETS at each IMD threshold
-# Spatial: FSS at neighborhood sizes [1, 3, 5, 9, 15]
-# Run raw-vs-corrected comparison → VerificationSummary schema
-# See pa.md for full code templates
+# api/routes/regime.py — swap mock for real
+from regime_classifier.service import RegimeClassifier
+classifier = RegimeClassifier("data/models/regime_classifier.pkl")
+
+@router.get("/current")
+def get_current_regime():
+    return classifier.predict(latest_index_window)
+```
+
+Routes to update:
+- `/regime/current` → `RegimeClassifier.predict()`
+- `/forecast/district` → `RegimeConditionedCorrector.correct()` + district agg
+- `/forecast/heavy-rain-prob` → `HeavyRainProbabilityModel.predict_proba()`
+- `/verification/summary` → `verification.metrics.run_verification()`
+
+### 8. Update Health Endpoint
+```python
+return {"status": "ok", "data_source": "live"}  # Change from "mock"
 ```
 
 ---
 
-## 🔲 TODO — Priority 3 (Stretch)
+## 🚀 Quick Start (for Person B on their laptop)
 
-### 6. OLR Data Integration
-- Download NOAA OLR from `https://psl.noaa.gov/data/gridded/data.olrcdr.interp.html`
-- Compute OLR anomaly and feed into regime_indices.py (currently placeholder `OLR_anom = 0.0`)
+```bash
+# Terminal 1: Database
+docker-compose up -d
 
-### 7. LPS/WD Flag Parsing
-- Parse IMD RSMC best-track bulletins for Low Pressure System flags
-- Parse 500hPa trough detection for Western Disturbance flags
-- Currently `LPS_flag = 0` and `WD_flag = 0` (placeholder)
+# Terminal 2: Backend API
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn api.main:app --reload --port 8000
+# Verify: http://localhost:8000/docs
 
-### 8. ConvLSTM/U-Net Spatial Correction (Phase 8 stretch goal)
-- Input tensor: (C, H, W) where C = [raw_precip, elevation, regime_prob_maps]
-- Pixelwise weighted MSE + optional FSS-based loss
-
----
-
-## 🔑 Integration Notes for Person B
-
-At Hour 10, Person A merges `feature/data-pipeline` to `main` first. Then Person B rebases.
-
-**What Person B needs from you:**
-1. `regime_classifier/service.py` → `RegimeClassifier.predict()` returns `RegimeOutput`
-2. `correction/xgboost_correction.py` → `RegimeConditionedCorrector.correct()` returns corrected precip array
-3. `extremes/heavy_rain_model.py` → `HeavyRainProbabilityModel.predict_proba()` returns `{threshold: prob}`
-4. `verification/metrics.py` → `run_verification()` returns a dict matching `VerificationSummary`
-
-All outputs must match the Pydantic schemas in `shared/schemas.py`.
+# Terminal 3: Frontend
+cd frontend && npm install && npm run dev
+# Opens: http://localhost:5173
+```

@@ -5,8 +5,8 @@ pydantic>=2.0
 xarray
 cfgrib
 netCDF4
-boto3
 requests
+h5py
 geopandas
 shapely
 regionmask

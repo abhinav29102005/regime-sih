@@ -1,30 +1,9 @@
-# Data
-data/raw/
-data/processed/
-data/models/
-*.nc
-*.grib2
-*.parquet
-
-# Python
+venv/
+.venv/
 __pycache__/
 *.pyc
-.venv/
-*.egg-info/
-dist/
-build/
-
-# Node
+.env
+data/
 node_modules/
-frontend/dist/
-
-# IDE
-.vscode/
-.idea/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Docker
-pgdata/
+.next/
+build/
