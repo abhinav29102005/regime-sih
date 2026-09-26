@@ -30,3 +30,4 @@ geoalchemy2
 
 # ===== CDS (Person A — optional, needs account) =====
 # cdsapi
+libsql-client>=0.3.1

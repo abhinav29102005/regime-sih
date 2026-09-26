@@ -114,57 +114,41 @@ def mock_regime_history(start: str, end: str) -> list[RegimeOutput]:
     return history
 
 
-import rasterio
 
-def get_chirps_value(lat, lon, filepath='chirps_sample.tif'):
-    try:
-        with rasterio.open(filepath) as src:
-            row, col = src.index(lon, lat)
-            val = src.read(1)[row, col]
-            if val < 0: # CHIRPS nodata is -9999
-                return 0.0
-            return float(val)
-    except Exception as e:
-        print(f"Error reading CHIRPS: {e}")
-        return 0.0
+import libsql_client
+import os
+
+URL = os.environ.get("TURSO_URL", "https://meghdhrishti-abhinav29102005.aws-ap-northeast-1.turso.io")
+TOKEN = os.environ.get("TURSO_TOKEN", "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3OTA0NTgwMTIsImlkIjoiMDFhMGRmOWQtMDkwMS03MTllLTlmYmMtZDAzZTNlNjhkZjI0Iiwia2lkIjoiYy1xeWVFV1NyU1hzQjBZQTZoQThEbFo2NmpUWldZZURFRmQ4aEduNVNNZyIsInJpZCI6IjJiYjc5YmNlLTk1OTItNGI5MC1hNWZlLWRjMTBkZDI4OWI0YSJ9.t5DkD1jQhL9EAZyqOnKARJgtzbS-EYM0JsWwSe28o1SxE57kPYt9zPizVncWOq5Y4Hy-Jz4hvE94i3q_XPg0DA")
 
 def mock_district_forecasts(lead_hours: int = 24) -> list[DistrictForecast]:
-    """Generate forecasts using REAL CHIRPS data!"""
     regime = mock_regime_current()
-    forecasts = []
+    try:
+        client = libsql_client.create_client_sync(url=URL, auth_token=TOKEN)
+        rs = client.execute("SELECT * FROM district_forecasts")
+        forecasts = []
+        for row in rs.rows:
+            forecasts.append(DistrictForecast(
+                district_id=row[0],
+                district_name=row[1],
+                state=row[2],
+                lat=row[3],
+                lon=row[4],
+                date=datetime.now(),
+                lead_hours=lead_hours,
+                raw_precip_mm=row[5],
+                corrected_precip_mm=row[6],
+                regime=regime.regime,
+                regime_confidence=regime.probabilities[regime.regime],
+                heavy_rain_prob_65mm=row[7],
+                heavy_rain_prob_115mm=row[8],
+                category=row[9]
+            ))
+        return forecasts
+    except Exception as e:
+        print(f"Turso DB Error: {e}")
+        return []
 
-    for d in SAMPLE_DISTRICTS:
-        # Fetch real rainfall from CHIRPS 2.0 dataset
-        raw_val = get_chirps_value(d['lat'], d['lon'])
-        
-        # Apply ML correction (dummy proxy for the missing pkl weights)
-        correction_factor = 1.05 if raw_val > 10 else 0.95
-        corrected = round(raw_val * correction_factor, 1)
-
-        heavy_65 = None
-        heavy_115 = None
-        if corrected > 25:
-            heavy_65 = round(min(0.95, corrected / 150), 3)
-            heavy_115 = round(min(0.80, corrected / 300), 3)
-
-        forecasts.append(DistrictForecast(
-            district_id=d['id'],
-            district_name=d['name'],
-            state=d['state'],
-            lat=d['lat'],
-            lon=d['lon'],
-            date=datetime.now(),
-            lead_hours=lead_hours,
-            raw_precip_mm=round(raw_val, 1),
-            corrected_precip_mm=corrected,
-            regime=regime.regime,
-            regime_confidence=regime.probabilities[regime.regime],
-            heavy_rain_prob_65mm=heavy_65,
-            heavy_rain_prob_115mm=heavy_115,
-            category=categorize_rainfall(corrected),
-        ))
-
-    return forecasts
 
 
 def mock_verification_summary(regime: str = "active") -> VerificationSummary:
