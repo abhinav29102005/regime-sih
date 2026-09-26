@@ -1,0 +1,32 @@
+# ===== Shared =====
+pydantic>=2.0
+
+# ===== Data Ingestion (Person A) =====
+xarray
+cfgrib
+netCDF4
+boto3
+requests
+geopandas
+shapely
+regionmask
+rioxarray
+
+# ===== ML (Person A) =====
+xgboost
+scikit-learn
+pandas
+numpy
+scipy
+joblib
+
+# ===== API (Person B) =====
+fastapi>=0.100
+uvicorn[standard]
+redis
+asyncpg
+sqlalchemy
+geoalchemy2
+
+# ===== CDS (Person A — optional, needs account) =====
+# cdsapi
