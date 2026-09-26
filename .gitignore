@@ -7,3 +7,10 @@ data/
 node_modules/
 .next/
 build/
+.env
+*.pem
+*.csv
+*.zip
+*.tif
+.venv/
+__pycache__/

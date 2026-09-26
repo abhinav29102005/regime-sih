@@ -119,7 +119,7 @@ import libsql_client
 import os
 
 URL = os.environ.get("TURSO_URL", "https://meghdhrishti-abhinav29102005.aws-ap-northeast-1.turso.io")
-TOKEN = os.environ.get("TURSO_TOKEN", "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3OTA0NTgwMTIsImlkIjoiMDFhMGRmOWQtMDkwMS03MTllLTlmYmMtZDAzZTNlNjhkZjI0Iiwia2lkIjoiYy1xeWVFV1NyU1hzQjBZQTZoQThEbFo2NmpUWldZZURFRmQ4aEduNVNNZyIsInJpZCI6IjJiYjc5YmNlLTk1OTItNGI5MC1hNWZlLWRjMTBkZDI4OWI0YSJ9.t5DkD1jQhL9EAZyqOnKARJgtzbS-EYM0JsWwSe28o1SxE57kPYt9zPizVncWOq5Y4Hy-Jz4hvE94i3q_XPg0DA")
+TOKEN = os.environ.get("TURSO_TOKEN", "")
 
 def mock_district_forecasts(lead_hours: int = 24) -> list[DistrictForecast]:
     regime = mock_regime_current()
