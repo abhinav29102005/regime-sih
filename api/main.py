@@ -31,4 +31,4 @@ app.include_router(districts.router, prefix="/api/v1/districts", tags=["District
 
 @app.get("/api/v1/health")
 def health():
-    return {"status": "ok", "data_source": "mock", "version": "0.1.0"}
+    return {"status": "ok", "data_source": "database", "version": "0.1.0"}
