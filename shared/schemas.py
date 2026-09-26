@@ -25,6 +25,9 @@ class DistrictForecast(BaseModel):
     lead_hours: int
     raw_precip_mm: float
     corrected_precip_mm: float
+    temperature: float | None = None
+    humidity: float | None = None
+    wind_speed: float | None = None
     regime: str
     regime_confidence: float
     heavy_rain_prob_65mm: float | None = None

@@ -142,7 +142,10 @@ def mock_district_forecasts(lead_hours: int = 24) -> list[DistrictForecast]:
                 regime_confidence=regime.probabilities[regime.regime],
                 heavy_rain_prob_65mm=row[7],
                 heavy_rain_prob_115mm=row[8],
-                category=row[9]
+                category=row[9],
+                temperature=row[10] if len(row) > 10 else None,
+                humidity=row[11] if len(row) > 11 else None,
+                wind_speed=row[12] if len(row) > 12 else None
             ))
         return forecasts
     except Exception as e:

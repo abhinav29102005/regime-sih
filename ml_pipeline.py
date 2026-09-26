@@ -1,6 +1,8 @@
 import json
 import requests
 import pandas as pd
+import joblib
+import os
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
@@ -73,8 +75,8 @@ def extract_districts_from_geojson():
     for feature in data.get('features', []):
         props = feature.get('properties', {})
         # Different geojson structures store names differently. We'll try common keys.
-        dtname = props.get('dtname') or props.get('DISTRICT') or props.get('name') or 'Unknown'
-        stname = props.get('stname') or props.get('STATE') or 'Unknown'
+        dtname = props.get('NAME_2') or props.get('dtname') or props.get('DISTRICT') or props.get('name') or 'Unknown'
+        stname = props.get('NAME_1') or props.get('stname') or props.get('STATE') or 'Unknown'
         
         # Approximate centroid from bounding box or just use polygon first coordinate
         geom = feature.get('geometry', {})
@@ -164,7 +166,10 @@ def fetch_current_weather_and_predict(model, districts):
                     "corrected_precip_mm": predicted_rain,          # ML Predicted for tomorrow
                     "heavy_rain_prob_65mm": prob_65,
                     "heavy_rain_prob_115mm": prob_115,
-                    "category": cat
+                    "category": cat,
+                    "temperature": daily["temperature_2m_max"][0],
+                    "humidity": daily["relative_humidity_2m_mean"][0],
+                    "wind_speed": daily["wind_speed_10m_max"][0]
                 })
         except Exception as e:
             print(f"Batch failed: {e}")
@@ -183,30 +188,42 @@ def push_to_turso(predictions):
     for p in predictions:
         client.execute(
             """
-            INSERT INTO district_forecasts (id, district_name, state, lat, lon, raw_precip_mm, corrected_precip_mm, heavy_rain_prob_65mm, heavy_rain_prob_115mm, category)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO district_forecasts (id, district_name, state, lat, lon, raw_precip_mm, corrected_precip_mm, heavy_rain_prob_65mm, heavy_rain_prob_115mm, category, temperature, humidity, wind_speed)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             [
                 p['id'], p['district_name'], p['state'], p['lat'], p['lon'],
                 p['raw_precip_mm'], p['corrected_precip_mm'],
                 p['heavy_rain_prob_65mm'], p['heavy_rain_prob_115mm'],
-                p['category']
+                p['category'], p['temperature'], p['humidity'], p['wind_speed']
             ]
         )
     print("Database updated! The frontend will now show REAL ML data!")
 
 if __name__ == "__main__":
+
+    os.makedirs('data/raw', exist_ok=True)
+    os.makedirs('data/processed', exist_ok=True)
+    os.makedirs('data/models', exist_ok=True)
+
     # 1. Fetch 2 years of history
     hist_df = fetch_historical_data()
+    hist_df.to_csv('data/raw/historical_weather_raw.csv', index=False)
+    hist_df.dropna().to_csv('data/processed/training_features.csv', index=False)
+    print('Saved training_data.csv to data/ folder.')
     
     # 2. Train the Random Forest
     rf_model = train_model(hist_df)
+    joblib.dump(rf_model, 'data/models/random_forest_regressor.pkl')
+    print('Saved trained model to data/models/')
     
     # 3. Get all Indian districts from the GeoJSON
     districts = extract_districts_from_geojson()
     
     # 4. Fetch today's weather & predict tomorrow
     final_preds = fetch_current_weather_and_predict(rf_model, districts)
+    pd.DataFrame(final_preds).to_csv('data/processed/inference_results.csv', index=False)
+    print('Saved predictions_data.csv to data/ folder.')
     
     # 5. Store on Turso
     push_to_turso(final_preds)
