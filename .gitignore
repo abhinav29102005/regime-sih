@@ -3,7 +3,6 @@ venv/
 __pycache__/
 *.pyc
 .env
-data/
 node_modules/
 .next/
 build/
