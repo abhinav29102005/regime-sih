@@ -60,7 +60,7 @@ export default function Dashboard() {
       {forecastLoading ? (
         <div className="skel" style={{ height: 450 }} />
       ) : forecasts && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 20, height: 'calc(100vh - 360px)', minHeight: 450 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, height: 'calc(100vh - 360px)', minHeight: 450 }}>
           <DistrictTable forecasts={forecasts} />
           <RainfallMap forecasts={forecasts} />
         </div>
