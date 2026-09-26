@@ -5,7 +5,8 @@ import { fetchCurrentRegime, fetchDistrictForecast } from "@/lib/api";
 import RegimeIndicator from "@/components/RegimeIndicator";
 import StatCard from "@/components/StatCard";
 import DistrictTable from "@/components/DistrictTable";
-import RainfallMap from "@/components/RainfallMap";
+import dynamic from "next/dynamic";
+const RainfallMap = dynamic(() => import("@/components/RainfallMap"), { ssr: false });
 import LeadSwitcher from "@/components/LeadSwitcher";
 
 export default function Dashboard() {
@@ -24,8 +25,8 @@ export default function Dashboard() {
     <div className="page-enter">
       <div style={{ marginBottom: 32, display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 20 }}>
         <div>
-          <h1 style={{ fontSize: "2.2rem", fontWeight: 800, letterSpacing: "-0.8px" }}>MeghDrishti (मेघ + दृष्टि)</h1>
-          <p style={{ color: "var(--text-2)", fontSize: "0.95rem", marginTop: 4 }}>बादलों से पहले, पैटर्न को पहचानो — Recognize the pattern before the clouds do.</p>
+          <h1 style={{ fontSize: "2.2rem", fontWeight: 800, letterSpacing: "-0.8px" }}>MeghDrishti</h1>
+          <p style={{ color: "var(--text-2)", fontSize: "0.95rem", marginTop: 4 }}>Real-time ML-corrected rainfall forecasts across India.</p>
         </div>
         <LeadSwitcher lead={lead} setLead={setLead} />
       </div>

@@ -4,7 +4,7 @@ import Providers from '@/lib/providers';
 import Navbar from '@/components/Navbar';
 
 export const metadata: Metadata = {
-  title: 'MeghDrishti | Vision into every cloud's regime',
+  title: "MeghDrishti | Vision into every cloud's regime",
   description: 'AI Post-Processing of Monsoon Rainfall',
 };
 
