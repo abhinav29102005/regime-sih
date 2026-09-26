@@ -1,3 +1,5 @@
+from dotenv import load_dotenv
+load_dotenv()
 """
 Database Client and Data Fetching Logic.
 (Previously mock_data.py, now 100% database-driven!)
