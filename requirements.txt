@@ -23,6 +23,7 @@ joblib
 # ===== API (Person B) =====
 fastapi>=0.100
 uvicorn[standard]
+python-dotenv
 redis
 asyncpg
 sqlalchemy

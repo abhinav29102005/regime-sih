@@ -4,6 +4,7 @@ import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { DistrictForecast } from "@/lib/api";
 import L from "leaflet";
+import type { Feature, FeatureCollection, Geometry } from "geojson";
 
 interface Props {
   forecasts: DistrictForecast[];
@@ -11,8 +12,14 @@ interface Props {
 
 type MetricType = "precip" | "prob_65" | "prob_115";
 
+interface DistrictGeoJsonProperties {
+  dtname?: string;
+  NAME_2?: string;
+  [key: string]: unknown;
+}
+
 export default function RainfallMap({ forecasts }: Props) {
-  const [geoData, setGeoData] = useState<any>(null);
+  const [geoData, setGeoData] = useState<FeatureCollection<Geometry, DistrictGeoJsonProperties> | null>(null);
   const [metric, setMetric] = useState<MetricType>("precip");
 
   useEffect(() => {
@@ -33,26 +40,27 @@ export default function RainfallMap({ forecasts }: Props) {
 
   const getColor = (f: DistrictForecast | undefined) => {
     if (!f) return "rgba(255,255,255,0.02)";
+    const cat = (f.category || "").toLowerCase().replace(/ /g, "_");
     if (metric === "precip") {
-      if (f.category === "light") return "#4ade80";
-      if (f.category === "moderate") return "#60a5fa";
-      if (f.category === "heavy") return "#fbbf24";
-      if (f.category === "very_heavy") return "#f87171";
-      if (f.category === "extremely_heavy") return "#dc2626";
+      if (cat.includes("extreme")) return "#dc2626";
+      if (cat.includes("very_heavy")) return "#f87171";
+      if (cat.includes("heavy")) return "#fbbf24";
+      if (cat.includes("moderate")) return "#60a5fa";
+      if (cat.includes("light")) return "#4ade80";
       return "rgba(255,255,255,0.02)";
     } else {
       const prob = metric === "prob_65" ? f.heavy_rain_prob_65mm : f.heavy_rain_prob_115mm;
       if (prob === null || prob === undefined) return "rgba(255,255,255,0.02)";
-      if (prob < 0.1) return "#4ade80";
-      if (prob < 0.3) return "#60a5fa";
-      if (prob < 0.6) return "#fbbf24";
-      if (prob < 0.8) return "#f87171";
+      if (prob < 10) return "#4ade80";
+      if (prob < 30) return "#60a5fa";
+      if (prob < 60) return "#fbbf24";
+      if (prob < 80) return "#f87171";
       return "#dc2626";
     }
   };
 
-  const styleFeature = (feature: any) => {
-    const districtName = (feature.properties?.dtname || feature.properties?.NAME_2 || "").toLowerCase();
+  const styleFeature = (feature?: Feature<Geometry, DistrictGeoJsonProperties>): L.PathOptions => {
+    const districtName = (feature?.properties?.dtname || feature?.properties?.NAME_2 || "").toLowerCase();
     const f = forecastMap[districtName];
     return {
       fillColor: getColor(f),
@@ -63,19 +71,21 @@ export default function RainfallMap({ forecasts }: Props) {
     };
   };
 
-  const onEachFeature = (feature: any, layer: any) => {
+  const onEachFeature = (feature: Feature<Geometry, DistrictGeoJsonProperties>, layer: L.Layer) => {
     const districtName = feature.properties?.dtname || feature.properties?.NAME_2 || "Unknown";
     const f = forecastMap[districtName.toLowerCase()];
     
     layer.on({
-      mouseover: (e: any) => {
-        const lyr = e.target;
-        lyr.setStyle({ weight: 2, color: "#ffffff", fillOpacity: 0.9 });
-        lyr.bringToFront();
+      mouseover: () => {
+        if (layer instanceof L.Path) {
+          layer.setStyle({ weight: 2, color: "#ffffff", fillOpacity: 0.9 });
+          layer.bringToFront();
+        }
       },
-      mouseout: (e: any) => {
-        const lyr = e.target;
-        lyr.setStyle(styleFeature(feature));
+      mouseout: () => {
+        if (layer instanceof L.Path) {
+          layer.setStyle(styleFeature(feature));
+        }
       }
     });
 
@@ -85,7 +95,7 @@ export default function RainfallMap({ forecasts }: Props) {
         tooltipContent += `Rainfall: ${f.corrected_precip_mm} mm/day<br/>Category: ${f.category}</div>`;
       } else {
         const prob = metric === "prob_65" ? f.heavy_rain_prob_65mm : f.heavy_rain_prob_115mm;
-        tooltipContent += `Probability: ${prob ? (prob * 100).toFixed(1) + "%" : "N/A"}</div>`;
+        tooltipContent += `Probability: ${prob != null ? prob.toFixed(1) + "%" : "N/A"}</div>`;
       }
       layer.bindTooltip(tooltipContent, { direction: "top", sticky: true, className: "custom-tooltip" });
     } else {

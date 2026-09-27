@@ -1,7 +1,13 @@
 import axios from 'axios';
 
+const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
+
+if (process.env.NODE_ENV === 'production' && !apiBaseUrl) {
+  throw new Error('NEXT_PUBLIC_API_URL must be set when building for production.');
+}
+
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1',
+  baseURL: apiBaseUrl || 'http://localhost:8000/api/v1',
   timeout: 10000,
 });
 

@@ -29,7 +29,7 @@ export default function Navbar() {
               MeghDrishti
             </div>
             <div style={{ fontSize: '0.65rem', color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-              Vision into every cloud's regime.
+              Vision into every cloud&apos;s regime.
             </div>
           </div>
         </div>

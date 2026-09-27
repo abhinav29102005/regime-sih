@@ -6,13 +6,33 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { motion } from "framer-motion";
 import RegimeSwitcher from "@/components/RegimeSwitcher";
 
+const fssData = [
+  { neighborhood: 1, raw: 0.21, corrected: 0.34 },
+  { neighborhood: 3, raw: 0.28, corrected: 0.43 },
+  { neighborhood: 5, raw: 0.35, corrected: 0.53 },
+  { neighborhood: 9, raw: 0.44, corrected: 0.73 },
+  { neighborhood: 15, raw: 0.75, corrected: 0.98 },
+  { neighborhood: 21, raw: 0.95, corrected: 0.98 },
+];
+
+const relData = [
+  { forecast: 0.05, perfect: 0.05, observed: 0.05 },
+  { forecast: 0.15, perfect: 0.15, observed: 0.15 },
+  { forecast: 0.25, perfect: 0.25, observed: 0.25 },
+  { forecast: 0.35, perfect: 0.35, observed: 0.35 },
+  { forecast: 0.45, perfect: 0.45, observed: 0.45 },
+  { forecast: 0.55, perfect: 0.55, observed: 0.55 },
+  { forecast: 0.65, perfect: 0.65, observed: 0.65 },
+  { forecast: 0.75, perfect: 0.75, observed: 0.75 },
+  { forecast: 0.85, perfect: 0.85, observed: 0.85 },
+  { forecast: 0.95, perfect: 0.95, observed: 0.95 },
+];
+
 export default function Verification() {
   const [regime, setRegime] = useState("active");
-  const { data, isLoading } = useQuery({ queryKey: ["verification", regime], queryFn: () => fetchVerificationSummary(regime) });
+  const { data, isLoading, isError, refetch } = useQuery({ queryKey: ["verification", regime], queryFn: () => fetchVerificationSummary(regime) });
 
   const etsData = data ? Object.entries(data.ets_by_threshold).map(([thr, v]) => ({ threshold: `>=${thr}mm`, raw: v.raw, corrected: v.corrected })) : [];
-  const fssData = [1, 3, 5, 9, 15, 21].map(n => ({ neighborhood: n, raw: Math.min(0.95, 0.15 + n * 0.04 + Math.random() * 0.05), corrected: Math.min(0.98, 0.28 + n * 0.05 + Math.random() * 0.04) }));
-  const relData = [0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95].map(b => ({ forecast: b, perfect: b, observed: Math.min(1, Math.max(0, b + (Math.random() - 0.5) * 0.1)) }));
 
   return (
     <div className="page-enter">
@@ -24,7 +44,12 @@ export default function Verification() {
         <RegimeSwitcher regime={regime} setRegime={setRegime} />
       </div>
       
-      {isLoading ? <div className="skel" style={{ height: 400 }} /> : data && (
+      {isLoading ? <div className="skel" style={{ height: 400 }} /> : isError ? (
+        <div className="glass" role="alert" style={{ padding: 24 }}>
+          <p>Verification metrics are not available for this regime yet.</p>
+          <button onClick={() => refetch()} style={{ marginTop: 12 }}>Try again</button>
+        </div>
+      ) : data && (
         <div className="dashboard-grid">
           <motion.div className="glass" style={{ padding: 24, display: "flex", flexDirection: "column" }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
             <h3 className="section-title" style={{ fontSize: "1rem", marginBottom: 20 }}>Continuous Metrics</h3>
@@ -62,7 +87,7 @@ export default function Verification() {
           </motion.div>
 
           <motion.div className="glass" style={{ padding: 24 }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-            <h3 className="section-title" style={{ fontSize: "1rem", marginBottom: 20 }}>Fractions Skill Score (≥64.5mm)</h3>
+            <h3 className="section-title" style={{ fontSize: "1rem", marginBottom: 20 }}>Fractions Skill Score (illustrative)</h3>
             <ResponsiveContainer width="100%" height={250}>
               <LineChart data={fssData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -78,7 +103,7 @@ export default function Verification() {
           </motion.div>
 
           <motion.div className="glass" style={{ padding: 24 }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-            <h3 className="section-title" style={{ fontSize: "1rem", marginBottom: 20 }}>Reliability Diagram (Heavy Rain)</h3>
+            <h3 className="section-title" style={{ fontSize: "1rem", marginBottom: 20 }}>Reliability Diagram (illustrative)</h3>
             <ResponsiveContainer width="100%" height={250}>
               <LineChart data={relData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" />

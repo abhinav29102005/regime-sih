@@ -2,10 +2,24 @@
 Async, auto-generates OpenAPI schema for frontend type codegen.
 """
 
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.routes import regime, forecast, verification, districts
+
+cors_origins = os.getenv("CORS_ORIGINS")
+if cors_origins is None:
+    cors_origins = ",".join(
+        [
+            "https://meghdrishti.abhinavkumarsingh.tech",
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
+            "http://localhost:3001",
+            "http://127.0.0.1:3001",
+        ]
+    )
 
 app = FastAPI(
     title="Regime-SIH API",
@@ -17,12 +31,9 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://meghdrishti.abhinavkumarsingh.tech",
-        "http://localhost:3000"
-    ],
+    allow_origins=[origin.strip() for origin in cors_origins.split(",") if origin.strip()],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 

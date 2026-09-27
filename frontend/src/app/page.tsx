@@ -15,10 +15,10 @@ export default function Dashboard() {
   const { data: regime, isLoading: regimeLoading } = useQuery({ queryKey: ["regime", "current"], queryFn: fetchCurrentRegime });
   const { data: forecasts, isLoading: forecastLoading } = useQuery({ queryKey: ["forecast", "district", lead], queryFn: () => fetchDistrictForecast(lead) });
 
-  const stats = forecasts ? {
+  const stats = (forecasts && forecasts.length > 0) ? {
     avgRaw: forecasts.reduce((s, f) => s + f.raw_precip_mm, 0) / forecasts.length,
     avgCorr: forecasts.reduce((s, f) => s + f.corrected_precip_mm, 0) / forecasts.length,
-    heavy: forecasts.filter(f => ["heavy", "very_heavy", "extremely_heavy"].includes(f.category)).length,
+    heavy: forecasts.filter(f => ["heavy", "very_heavy", "extremely_heavy"].includes((f.category || "").toLowerCase().replace(/ /g, "_"))).length,
   } : null;
 
   return (
