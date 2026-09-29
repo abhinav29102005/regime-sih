@@ -44,7 +44,11 @@ export interface VerificationSummary {
 
 export const fetchCurrentRegime = () => api.get<RegimeOutput>('/regime/current').then(r => r.data);
 export const fetchRegimeHistory = (start: string, end: string) => api.get<RegimeOutput[]>('/regime/history', { params: { start, end } }).then(r => r.data);
-export const fetchDistrictForecast = (lead: number = 24) => api.get<DistrictForecast[]>('/forecast/district', { params: { lead } }).then(r => r.data);
+export const fetchDistrictForecast = (lead: number = 24) => api.get<DistrictForecast[]>('/forecast/district', { params: { lead } }).then(r => r.data.map(d => ({
+  ...d,
+  heavy_rain_prob_65mm: d.heavy_rain_prob_65mm != null ? d.heavy_rain_prob_65mm / 100 : null,
+  heavy_rain_prob_115mm: d.heavy_rain_prob_115mm != null ? d.heavy_rain_prob_115mm / 100 : null
+})));
 export const fetchVerificationSummary = (regime: string) => api.get<VerificationSummary>('/verification/summary', { params: { regime } }).then(r => r.data);
 
 export const REGIME_LABELS: Record<string, string> = {
