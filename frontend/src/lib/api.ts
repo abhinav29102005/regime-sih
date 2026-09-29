@@ -21,6 +21,9 @@ export interface DistrictForecast {
   lead_hours: number;
   raw_precip_mm: number;
   corrected_precip_mm: number;
+  temperature?: number;
+  humidity?: number;
+  wind_speed?: number;
   regime: string;
   regime_confidence: number;
   heavy_rain_prob_65mm: number | null;

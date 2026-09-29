@@ -3,7 +3,7 @@ import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DistrictForecast } from '@/lib/api';
 
-type SortKey = 'district_name' | 'state' | 'raw_precip_mm' | 'corrected_precip_mm' | 'heavy_rain_prob_65mm' | 'category';
+type SortKey = 'district_name' | 'state' | 'raw_precip_mm' | 'corrected_precip_mm' | 'heavy_rain_prob_65mm' | 'category' | 'temperature' | 'humidity' | 'wind_speed';
 
 export default function DistrictTable({ forecasts }: { forecasts: DistrictForecast[] }) {
   const [search, setSearch] = useState('');
@@ -58,6 +58,9 @@ export default function DistrictTable({ forecasts }: { forecasts: DistrictForeca
               <th onClick={() => handleSort('raw_precip_mm')}>Raw {sortKey === 'raw_precip_mm' ? (sortAsc ? '↑' : '↓') : ''}</th>
               <th onClick={() => handleSort('corrected_precip_mm')}>Corrected {sortKey === 'corrected_precip_mm' ? (sortAsc ? '↑' : '↓') : ''}</th>
               <th>Δ%</th>
+              <th onClick={() => handleSort('temperature')}>Temp {sortKey === 'temperature' ? (sortAsc ? '↑' : '↓') : ''}</th>
+              <th onClick={() => handleSort('humidity')}>RH% {sortKey === 'humidity' ? (sortAsc ? '↑' : '↓') : ''}</th>
+              <th onClick={() => handleSort('wind_speed')}>Wind {sortKey === 'wind_speed' ? (sortAsc ? '↑' : '↓') : ''}</th>
               <th onClick={() => handleSort('heavy_rain_prob_65mm')}>Heavy % {sortKey === 'heavy_rain_prob_65mm' ? (sortAsc ? '↑' : '↓') : ''}</th>
               <th onClick={() => handleSort('category')}>Category {sortKey === 'category' ? (sortAsc ? '↑' : '↓') : ''}</th>
             </tr>
@@ -78,11 +81,14 @@ export default function DistrictTable({ forecasts }: { forecasts: DistrictForeca
                     <td style={{ color: 'var(--text-2)' }}>{f.state}</td>
                     <td>{f.raw_precip_mm.toFixed(1)}</td>
                     <td style={{ fontWeight: 600, color: 'var(--accent)' }}>{f.corrected_precip_mm.toFixed(1)}</td>
-                    <td>
+<td>
                       <span className={f.corrected_precip_mm < f.raw_precip_mm ? 'improve' : 'degrade'}>
                         {diff > 0 ? '+' : ''}{diff.toFixed(0)}%
                       </span>
                     </td>
+                    <td>{f.temperature != null ? f.temperature.toFixed(1) + '°' : '—'}</td>
+                    <td>{f.humidity != null ? f.humidity.toFixed(0) + '%' : '—'}</td>
+                    <td>{f.wind_speed != null ? f.wind_speed.toFixed(1) : '—'}</td>
                     <td>
                       {f.heavy_rain_prob_65mm != null
                         ? <span style={{ color: f.heavy_rain_prob_65mm > 0.5 ? 'var(--red)' : 'var(--text-2)', fontWeight: f.heavy_rain_prob_65mm > 0.5 ? 600 : 400 }}>
