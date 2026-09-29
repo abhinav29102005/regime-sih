@@ -30,6 +30,7 @@ app.include_router(regime.router, prefix="/api/v1/regime", tags=["Regime"])
 app.include_router(forecast.router, prefix="/api/v1/forecast", tags=["Forecast"])
 app.include_router(verification.router, prefix="/api/v1/verification", tags=["Verification"])
 app.include_router(districts.router, prefix="/api/v1/districts", tags=["Districts"])
+app.include_router(pipeline.router, prefix="/api/v1/pipeline", tags=["Pipeline"])
 
 
 @app.get("/api/v1/health")

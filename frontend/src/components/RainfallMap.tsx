@@ -22,39 +22,43 @@ export default function RainfallMap({ forecasts }: Props) {
       .catch(e => console.error("Failed to load geojson", e));
   }, []);
 
+  const normalizeString = (str: string) => str.toLowerCase().replace(/[^a-z]/g, '');
+
   const forecastMap = useMemo(() => {
     const map: Record<string, DistrictForecast> = {};
     forecasts.forEach(f => {
-      map[f.district_id.toLowerCase()] = f;
-      map[f.district_name.toLowerCase()] = f;
+      map[normalizeString(f.district_id)] = f;
+      map[normalizeString(f.district_name)] = f;
     });
     return map;
   }, [forecasts]);
 
   const getColor = (f: DistrictForecast | undefined) => {
-    if (!f) return "rgba(0,0,0,0.02)";
+    if (!f) return "rgba(0,0,0,0.01)";
     if (metric === "precip") {
       const cat = f.category.toLowerCase().replace(' rain', '').replace(' ', '_');
-      if (cat === "light") return "#22c55e";
+      if (cat === "light") return "#0ea5e9";
       if (cat === "moderate") return "#3b82f6";
-      if (cat === "heavy") return "#f59e0b";
-      if (cat === "very_heavy") return "#ef4444";
-      if (cat === "extremely_heavy") return "#b91c1c";
-      return "rgba(0,0,0,0.02)";
+      if (cat === "heavy") return "#eab308";
+      if (cat === "very_heavy") return "#f97316";
+      if (cat === "extremely_heavy") return "#ef4444";
+      return "rgba(0,0,0,0.01)";
     } else {
       const prob = metric === "prob_65" ? f.heavy_rain_prob_65mm : f.heavy_rain_prob_115mm;
-      if (prob === null || prob === undefined) return "rgba(0,0,0,0.02)";
-      if (prob < 0.1) return "rgba(34, 197, 94, 0.3)"; // Faint green for very low prob
+      if (prob === null || prob === undefined) return "rgba(0,0,0,0.01)";
+      if (prob < 0.1) return "rgba(14, 165, 233, 0.15)";
       if (prob < 0.3) return "#3b82f6";
-      if (prob < 0.6) return "#f59e0b";
-      if (prob < 0.8) return "#ef4444";
-      return "#b91c1c";
+      if (prob < 0.6) return "#eab308";
+      if (prob < 0.8) return "#f97316";
+      return "#ef4444";
     }
   };
 
   const styleFeature = (feature: any) => {
-    const districtName = (feature.properties?.dtname || feature.properties?.NAME_2 || "").toLowerCase();
-    const f = forecastMap[districtName];
+    const name1 = normalizeString(feature.properties?.dtname || "");
+    const name2 = normalizeString(feature.properties?.NAME_2 || "");
+    const name3 = normalizeString(feature.properties?.district || "");
+    const f = forecastMap[name1] || forecastMap[name2] || forecastMap[name3];
     return {
       fillColor: getColor(f),
       weight: 0.5,
@@ -65,8 +69,11 @@ export default function RainfallMap({ forecasts }: Props) {
   };
 
   const onEachFeature = (feature: any, layer: any) => {
+    const name1 = normalizeString(feature.properties?.dtname || "");
+    const name2 = normalizeString(feature.properties?.NAME_2 || "");
+    const name3 = normalizeString(feature.properties?.district || "");
     const districtName = feature.properties?.dtname || feature.properties?.NAME_2 || "Unknown";
-    const f = forecastMap[districtName.toLowerCase()];
+    const f = forecastMap[name1] || forecastMap[name2] || forecastMap[name3];
     
     layer.on({
       mouseover: (e: any) => {
@@ -127,19 +134,19 @@ export default function RainfallMap({ forecasts }: Props) {
         
         {metric === "precip" ? (
           <>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#22c55e" }}></div> Light</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#0ea5e9" }}></div> Light</div>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#3b82f6" }}></div> Moderate</div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#f59e0b" }}></div> Heavy</div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#ef4444" }}></div> Very Heavy</div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#b91c1c" }}></div> Extremely Heavy</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#eab308" }}></div> Heavy</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#f97316" }}></div> Very Heavy</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#ef4444" }}></div> Extremely Heavy</div>
           </>
         ) : (
           <>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#22c55e" }}></div> &lt; 10%</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#0ea5e9" }}></div> &lt; 10%</div>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#3b82f6" }}></div> 10% - 30%</div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#f59e0b" }}></div> 30% - 60%</div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#ef4444" }}></div> 60% - 80%</div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#b91c1c" }}></div> &gt; 80%</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#eab308" }}></div> 30% - 60%</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#f97316" }}></div> 60% - 80%</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#ef4444" }}></div> &gt; 80%</div>
           </>
         )}
       </div>

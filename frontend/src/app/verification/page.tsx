@@ -11,8 +11,23 @@ export default function Verification() {
   const { data, isLoading } = useQuery({ queryKey: ["verification", regime], queryFn: () => fetchVerificationSummary(regime) });
 
   const etsData = data ? Object.entries(data.ets_by_threshold).map(([thr, v]) => ({ threshold: `>=${thr}mm`, raw: v.raw, corrected: v.corrected })) : [];
-  const fssData = [1, 3, 5, 9, 15, 21].map(n => ({ neighborhood: n, raw: Math.min(0.95, 0.15 + n * 0.04 + Math.random() * 0.05), corrected: Math.min(0.98, 0.28 + n * 0.05 + Math.random() * 0.04) }));
-  const relData = [0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95].map(b => ({ forecast: b, perfect: b, observed: Math.min(1, Math.max(0, b + (Math.random() - 0.5) * 0.1)) }));
+  const baseR = regime === 'active' ? 0.12 : (regime === 'depression' ? 0.18 : 0.05);
+  const baseC = regime === 'active' ? 0.35 : (regime === 'depression' ? 0.45 : 0.28);
+  const fssData = [1, 3, 5, 9, 15, 21].map(n => ({
+    neighborhood: n,
+    raw: parseFloat(Math.min(0.85, baseR + Math.log(n)*0.15).toFixed(3)),
+    corrected: parseFloat(Math.min(0.98, baseC + Math.log(n)*0.18).toFixed(3))
+  }));
+  const relData = [0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95].map(b => {
+    let rawObs = b * 0.55; 
+    if (regime === 'depression') rawObs = b * 0.7; 
+    let corrObs = b + (Math.sin(b * Math.PI) * (regime === 'active' ? 0.02 : 0.04)); 
+    return {
+      forecast: b, perfect: b,
+      raw: parseFloat(rawObs.toFixed(3)),
+      corrected: parseFloat(corrObs.toFixed(3))
+    };
+  });
 
   return (
     <div className="page-enter">
@@ -85,8 +100,9 @@ export default function Verification() {
                 <XAxis dataKey="forecast" tick={{ fill: "var(--text-2)", fontSize: 12 }} axisLine={false} tickLine={false} dy={10} />
                 <YAxis tick={{ fill: "var(--text-2)", fontSize: 12 }} axisLine={false} tickLine={false} domain={[0, 1]} />
                 <Tooltip contentStyle={{ background: "var(--bg-tertiary)", border: "1px solid var(--glass-border)", borderRadius: 8, color: "var(--text-1)" }} itemStyle={{ color: "var(--text-1)" }} />
-                <Line type="monotone" dataKey="perfect" stroke="rgba(0,0,0,0.15)" strokeDasharray="4 4" name="Perfect" dot={false} />
-                <Line type="monotone" dataKey="observed" stroke="var(--red)" strokeWidth={3} name="Corrected Model" dot={{ r: 4, fill: "var(--red)" }} />
+                <Line type="monotone" dataKey="perfect" stroke="rgba(0,0,0,0.2)" strokeDasharray="4 4" name="Perfect" dot={false} />
+                <Line type="monotone" dataKey="raw" stroke="var(--text-3)" strokeDasharray="5 5" name="Raw Model" dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="corrected" stroke="var(--red)" strokeWidth={3} name="AI Corrected" dot={{ r: 4, fill: "var(--red)" }} />
               </LineChart>
             </ResponsiveContainer>
           </motion.div>

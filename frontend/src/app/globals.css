@@ -26,11 +26,11 @@
   --regime-wd: #4f46e5;
   --regime-normal: #16a34a;
   
-  --rain-light: #22c55e;
+  --rain-light: #0ea5e9;
   --rain-moderate: #3b82f6;
-  --rain-heavy: #f59e0b;
-  --rain-very-heavy: #ef4444;
-  --rain-extreme: #b91c1c;
+  --rain-heavy: #eab308;
+  --rain-very-heavy: #f97316;
+  --rain-extreme: #ef4444;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
