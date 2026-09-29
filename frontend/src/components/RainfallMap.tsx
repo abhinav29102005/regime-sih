@@ -36,6 +36,7 @@ export default function RainfallMap({ forecasts }: Props) {
   const getColor = (f: DistrictForecast | undefined) => {
     if (!f) return "rgba(0,0,0,0.01)";
     if (metric === "precip") {
+      if (f.corrected_precip_mm < 2.5) return "rgba(0,0,0,0.02)"; // No/Trace rain
       const cat = f.category.toLowerCase().replace(' rain', '').replace(' ', '_');
       if (cat === "light") return "#0ea5e9";
       if (cat === "moderate") return "#3b82f6";
@@ -46,8 +47,9 @@ export default function RainfallMap({ forecasts }: Props) {
     } else {
       const prob = metric === "prob_65" ? f.heavy_rain_prob_65mm : f.heavy_rain_prob_115mm;
       if (prob === null || prob === undefined) return "rgba(0,0,0,0.01)";
-      if (prob < 0.1) return "rgba(14, 165, 233, 0.15)";
-      if (prob < 0.3) return "#3b82f6";
+      if (prob < 0.05) return "rgba(0,0,0,0.02)"; // Almost no chance
+      if (prob < 0.2) return "rgba(14, 165, 233, 0.25)"; // Cyan transparent
+      if (prob < 0.4) return "#3b82f6";
       if (prob < 0.6) return "#eab308";
       if (prob < 0.8) return "#f97316";
       return "#ef4444";
@@ -105,7 +107,7 @@ export default function RainfallMap({ forecasts }: Props) {
   // Find top critical districts
   const criticalDistricts = useMemo(() => {
     return [...forecasts]
-      .filter(f => f.heavy_rain_prob_65mm !== null && f.heavy_rain_prob_65mm > 0.6)
+      .filter(f => f.heavy_rain_prob_65mm !== null && f.heavy_rain_prob_65mm > 0.4)
       .sort((a, b) => (b.heavy_rain_prob_65mm || 0) - (a.heavy_rain_prob_65mm || 0))
       .slice(0, 5);
   }, [forecasts]);
@@ -169,7 +171,8 @@ export default function RainfallMap({ forecasts }: Props) {
         
         {metric === "precip" ? (
           <>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#0ea5e9" }}></div> Light</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "rgba(0,0,0,0.05)", border: "1px solid rgba(0,0,0,0.1)" }}></div> Trace / No Rain</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#0ea5e9" }}></div> Light Rain</div>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#3b82f6" }}></div> Moderate</div>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#eab308" }}></div> Heavy</div>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#f97316" }}></div> Very Heavy</div>
@@ -177,9 +180,10 @@ export default function RainfallMap({ forecasts }: Props) {
           </>
         ) : (
           <>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#0ea5e9" }}></div> &lt; 10%</div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#3b82f6" }}></div> 10% - 30%</div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#eab308" }}></div> 30% - 60%</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "rgba(0,0,0,0.05)", border: "1px solid rgba(0,0,0,0.1)" }}></div> &lt; 5%</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "rgba(14, 165, 233, 0.5)" }}></div> 5% - 20%</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#3b82f6" }}></div> 20% - 40%</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#eab308" }}></div> 40% - 60%</div>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#f97316" }}></div> 60% - 80%</div>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#ef4444" }}></div> &gt; 80%</div>
           </>
