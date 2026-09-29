@@ -53,7 +53,7 @@ export default function Verification() {
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="threshold" tick={{ fill: "var(--text-2)", fontSize: 12 }} axisLine={false} tickLine={false} dy={10} />
                 <YAxis tick={{ fill: "var(--text-2)", fontSize: 12 }} axisLine={false} tickLine={false} domain={[0, 0.6]} />
-                <Tooltip cursor={{ fill: "rgba(255,255,255,0.05)" }} contentStyle={{ background: "var(--bg-tertiary)", border: "1px solid var(--glass-border)", borderRadius: 8, color: "#fff" }} itemStyle={{ color: "#fff" }} />
+                <Tooltip cursor={{ fill: "rgba(0,0,0,0.05)" }} contentStyle={{ background: "var(--bg-tertiary)", border: "1px solid var(--glass-border)", borderRadius: 8, color: "var(--text-1)" }} itemStyle={{ color: "var(--text-1)" }} />
                 <Legend iconType="circle" wrapperStyle={{ fontSize: 12, paddingTop: 20 }} />
                 <Bar dataKey="raw" fill="var(--text-3)" name="Raw NWP" radius={[4, 4, 0, 0]} />
                 <Bar dataKey="corrected" fill="var(--accent)" name="AI-Corrected" radius={[4, 4, 0, 0]} />
@@ -68,8 +68,8 @@ export default function Verification() {
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="neighborhood" tick={{ fill: "var(--text-2)", fontSize: 12 }} axisLine={false} tickLine={false} dy={10} />
                 <YAxis tick={{ fill: "var(--text-2)", fontSize: 12 }} axisLine={false} tickLine={false} domain={[0, 1]} />
-                <Tooltip contentStyle={{ background: "var(--bg-tertiary)", border: "1px solid var(--glass-border)", borderRadius: 8, color: "#fff" }} itemStyle={{ color: "#fff" }} />
-                <ReferenceLine y={0.5} stroke="rgba(255,255,255,0.2)" strokeDasharray="4 4" />
+                <Tooltip contentStyle={{ background: "var(--bg-tertiary)", border: "1px solid var(--glass-border)", borderRadius: 8, color: "var(--text-1)" }} itemStyle={{ color: "var(--text-1)" }} />
+                <ReferenceLine y={0.5} stroke="rgba(0,0,0,0.15)" strokeDasharray="4 4" />
                 <Legend iconType="circle" wrapperStyle={{ fontSize: 12, paddingTop: 20 }} />
                 <Line type="monotone" dataKey="raw" stroke="var(--text-3)" strokeDasharray="5 5" name="Raw" dot={{ r: 3 }} />
                 <Line type="monotone" dataKey="corrected" stroke="var(--accent)" strokeWidth={3} name="Corrected" dot={{ r: 4, strokeWidth: 2 }} />
@@ -84,8 +84,8 @@ export default function Verification() {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="forecast" tick={{ fill: "var(--text-2)", fontSize: 12 }} axisLine={false} tickLine={false} dy={10} />
                 <YAxis tick={{ fill: "var(--text-2)", fontSize: 12 }} axisLine={false} tickLine={false} domain={[0, 1]} />
-                <Tooltip contentStyle={{ background: "var(--bg-tertiary)", border: "1px solid var(--glass-border)", borderRadius: 8, color: "#fff" }} itemStyle={{ color: "#fff" }} />
-                <Line type="monotone" dataKey="perfect" stroke="rgba(255,255,255,0.2)" strokeDasharray="4 4" name="Perfect" dot={false} />
+                <Tooltip contentStyle={{ background: "var(--bg-tertiary)", border: "1px solid var(--glass-border)", borderRadius: 8, color: "var(--text-1)" }} itemStyle={{ color: "var(--text-1)" }} />
+                <Line type="monotone" dataKey="perfect" stroke="rgba(0,0,0,0.15)" strokeDasharray="4 4" name="Perfect" dot={false} />
                 <Line type="monotone" dataKey="observed" stroke="var(--red)" strokeWidth={3} name="Corrected Model" dot={{ r: 4, fill: "var(--red)" }} />
               </LineChart>
             </ResponsiveContainer>

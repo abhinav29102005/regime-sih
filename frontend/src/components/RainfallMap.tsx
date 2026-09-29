@@ -32,22 +32,23 @@ export default function RainfallMap({ forecasts }: Props) {
   }, [forecasts]);
 
   const getColor = (f: DistrictForecast | undefined) => {
-    if (!f) return "rgba(255,255,255,0.02)";
+    if (!f) return "rgba(0,0,0,0.02)";
     if (metric === "precip") {
-      if (f.category === "light") return "#4ade80";
-      if (f.category === "moderate") return "#60a5fa";
-      if (f.category === "heavy") return "#fbbf24";
-      if (f.category === "very_heavy") return "#f87171";
-      if (f.category === "extremely_heavy") return "#dc2626";
-      return "rgba(255,255,255,0.02)";
+      const cat = f.category.toLowerCase().replace(' rain', '').replace(' ', '_');
+      if (cat === "light") return "#22c55e";
+      if (cat === "moderate") return "#3b82f6";
+      if (cat === "heavy") return "#f59e0b";
+      if (cat === "very_heavy") return "#ef4444";
+      if (cat === "extremely_heavy") return "#b91c1c";
+      return "rgba(0,0,0,0.02)";
     } else {
       const prob = metric === "prob_65" ? f.heavy_rain_prob_65mm : f.heavy_rain_prob_115mm;
-      if (prob === null || prob === undefined) return "rgba(255,255,255,0.02)";
-      if (prob < 0.1) return "#4ade80";
-      if (prob < 0.3) return "#60a5fa";
-      if (prob < 0.6) return "#fbbf24";
-      if (prob < 0.8) return "#f87171";
-      return "#dc2626";
+      if (prob === null || prob === undefined) return "rgba(0,0,0,0.02)";
+      if (prob < 0.1) return "rgba(34, 197, 94, 0.3)"; // Faint green for very low prob
+      if (prob < 0.3) return "#3b82f6";
+      if (prob < 0.6) return "#f59e0b";
+      if (prob < 0.8) return "#ef4444";
+      return "#b91c1c";
     }
   };
 
@@ -58,7 +59,7 @@ export default function RainfallMap({ forecasts }: Props) {
       fillColor: getColor(f),
       weight: 0.5,
       opacity: 1,
-      color: "rgba(255,255,255,0.1)",
+      color: "rgba(0,0,0,0.15)",
       fillOpacity: 0.7
     };
   };
@@ -70,7 +71,7 @@ export default function RainfallMap({ forecasts }: Props) {
     layer.on({
       mouseover: (e: any) => {
         const lyr = e.target;
-        lyr.setStyle({ weight: 2, color: "#ffffff", fillOpacity: 0.9 });
+        lyr.setStyle({ weight: 2, color: "#0f172a", fillOpacity: 0.9 });
         lyr.bringToFront();
       },
       mouseout: (e: any) => {
@@ -94,51 +95,51 @@ export default function RainfallMap({ forecasts }: Props) {
   };
 
   return (
-    <div style={{ position: "relative", width: "100%", height: "100%", minHeight: 500, borderRadius: 16, overflow: "hidden", background: "#000000" }}>
+    <div style={{ position: "relative", width: "100%", height: "100%", minHeight: 500, borderRadius: 16, overflow: "hidden", background: "#f8fafc" }}>
       
       {/* Metric Toggle UI */}
-      <div style={{ position: "absolute", top: 16, right: 16, zIndex: 999, display: "flex", gap: "8px", background: "rgba(0,0,0,0.6)", padding: "8px", borderRadius: "12px", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.1)" }}>
+      <div style={{ position: "absolute", top: 16, right: 16, zIndex: 999, display: "flex", gap: "8px", background: "var(--glass-bg)", padding: "8px", borderRadius: "12px", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.1)" }}>
         <button 
           onClick={() => setMetric("precip")}
-          style={{ padding: "6px 12px", borderRadius: "8px", background: metric === "precip" ? "rgba(255,255,255,0.15)" : "transparent", color: "white", fontSize: "12px", border: "none", cursor: "pointer", transition: "0.2s" }}
+          style={{ padding: "6px 12px", borderRadius: "8px", background: metric === "precip" ? "rgba(0,0,0,0.1)" : "transparent", color: "var(--text-1)", fontSize: "12px", border: "none", cursor: "pointer", transition: "0.2s" }}
         >
           Rainfall (mm/day)
         </button>
         <button 
           onClick={() => setMetric("prob_65")}
-          style={{ padding: "6px 12px", borderRadius: "8px", background: metric === "prob_65" ? "rgba(255,255,255,0.15)" : "transparent", color: "white", fontSize: "12px", border: "none", cursor: "pointer", transition: "0.2s" }}
+          style={{ padding: "6px 12px", borderRadius: "8px", background: metric === "prob_65" ? "rgba(0,0,0,0.1)" : "transparent", color: "var(--text-1)", fontSize: "12px", border: "none", cursor: "pointer", transition: "0.2s" }}
         >
           Prob &gt; 65mm
         </button>
         <button 
           onClick={() => setMetric("prob_115")}
-          style={{ padding: "6px 12px", borderRadius: "8px", background: metric === "prob_115" ? "rgba(255,255,255,0.15)" : "transparent", color: "white", fontSize: "12px", border: "none", cursor: "pointer", transition: "0.2s" }}
+          style={{ padding: "6px 12px", borderRadius: "8px", background: metric === "prob_115" ? "rgba(0,0,0,0.1)" : "transparent", color: "var(--text-1)", fontSize: "12px", border: "none", cursor: "pointer", transition: "0.2s" }}
         >
           Prob &gt; 115mm
         </button>
       </div>
 
       {/* Legend / Index */}
-      <div style={{ position: "absolute", bottom: 24, left: 16, zIndex: 999, background: "rgba(0,0,0,0.7)", padding: "12px", borderRadius: "12px", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.1)", color: "white", fontSize: "12px", display: "flex", flexDirection: "column", gap: "6px" }}>
+      <div style={{ position: "absolute", bottom: 24, left: 16, zIndex: 999, background: "var(--glass-bg)", padding: "12px", borderRadius: "12px", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.1)", color: "var(--text-1)", fontSize: "12px", display: "flex", flexDirection: "column", gap: "6px" }}>
         <div style={{ fontWeight: 600, marginBottom: "4px" }}>
           {metric === "precip" ? "Rainfall Category" : "Probability Scale"}
         </div>
         
         {metric === "precip" ? (
           <>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#4ade80" }}></div> Light</div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#60a5fa" }}></div> Moderate</div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#fbbf24" }}></div> Heavy</div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#f87171" }}></div> Very Heavy</div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#dc2626" }}></div> Extremely Heavy</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#22c55e" }}></div> Light</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#3b82f6" }}></div> Moderate</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#f59e0b" }}></div> Heavy</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#ef4444" }}></div> Very Heavy</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#b91c1c" }}></div> Extremely Heavy</div>
           </>
         ) : (
           <>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#4ade80" }}></div> &lt; 10%</div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#60a5fa" }}></div> 10% - 30%</div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#fbbf24" }}></div> 30% - 60%</div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#f87171" }}></div> 60% - 80%</div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#dc2626" }}></div> &gt; 80%</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#22c55e" }}></div> &lt; 10%</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#3b82f6" }}></div> 10% - 30%</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#f59e0b" }}></div> 30% - 60%</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#ef4444" }}></div> 60% - 80%</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><div style={{ width: 12, height: 12, borderRadius: "50%", background: "#b91c1c" }}></div> &gt; 80%</div>
           </>
         )}
       </div>
@@ -146,7 +147,7 @@ export default function RainfallMap({ forecasts }: Props) {
       <MapContainer
         center={[21.5937, 78.9629]}
         zoom={4.2}
-        style={{ height: "100%", width: "100%", background: "#000000" }}
+        style={{ height: "100%", width: "100%", background: "#f8fafc" }}
         zoomControl={false}
       >
         <TileLayer

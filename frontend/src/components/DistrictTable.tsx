@@ -49,8 +49,8 @@ export default function DistrictTable({ forecasts }: { forecasts: DistrictForeca
         />
       </div>
 
-      <div style={{ overflowY: 'auto', flex: 1, paddingRight: 4 }}>
-        <table className="data-tbl">
+      <div style={{ overflow: 'auto', flex: 1, paddingRight: 4 }}>
+        <table className="data-tbl" style={{ minWidth: 800 }}>
           <thead>
             <tr>
               <th onClick={() => handleSort('district_name')}>District {sortKey === 'district_name' ? (sortAsc ? '↑' : '↓') : ''}</th>
@@ -96,7 +96,7 @@ export default function DistrictTable({ forecasts }: { forecasts: DistrictForeca
                           </span>
                         : <span style={{ color: 'var(--text-3)' }}>—</span>}
                     </td>
-                    <td><span className={`cat-pill cat-${f.category}`}>{f.category.replace(/_/g, ' ')}</span></td>
+                    <td><span className={`cat-pill cat-${f.category.toLowerCase().replace(' rain', '').replace(' ', '_')}`}>{f.category.replace(/_/g, ' ')}</span></td>
                   </motion.tr>
                 );
               })}
