@@ -15,7 +15,7 @@ export default function Navbar() {
   return (
     <header style={{
       position: 'sticky', top: 0, zIndex: 50,
-      background: 'rgba(4, 8, 15, 0.7)', backdropFilter: 'blur(16px)',
+      background: 'rgba(255, 255, 255, 0.7)', backdropFilter: 'blur(16px)',
       borderBottom: '1px solid var(--glass-border)',
     }}>
       <div style={{
@@ -23,7 +23,7 @@ export default function Navbar() {
         display: 'flex', alignItems: 'center', justifyContent: 'space-between'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ fontSize: '1.6rem' }}>🌧️</span>
+          
           <div>
             <div style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--accent)', letterSpacing: '-0.3px', lineHeight: 1.2 }}>
               MeghDrishti
@@ -34,15 +34,15 @@ export default function Navbar() {
           </div>
         </div>
 
-        <nav style={{ display: 'flex', gap: 8, background: 'rgba(255,255,255,0.03)', padding: 6, borderRadius: 100, border: '1px solid rgba(255,255,255,0.05)' }}>
+        <nav style={{ display: 'flex', gap: 8, background: 'rgba(0,0,0,0.03)', padding: 6, borderRadius: 6, border: '1px solid rgba(0,0,0,0.05)' }}>
           {NAV.map((item) => {
             const isActive = path === item.href;
             return (
-              <Link key={item.href} href={item.href} style={{ position: 'relative', padding: '8px 20px', fontSize: '0.88rem', fontWeight: isActive ? 600 : 500, color: isActive ? 'var(--bg-primary)' : 'var(--text-2)', textDecoration: 'none', transition: 'color 0.2s', zIndex: 1 }}>
+              <Link key={item.href} href={item.href} style={{ position: 'relative', padding: '8px 20px', fontSize: '0.88rem', fontWeight: isActive ? 600 : 500, color: isActive ? '#ffffff' : 'var(--text-2)', textDecoration: 'none', transition: 'color 0.2s', zIndex: 1 }}>
                 {isActive && (
                   <motion.div
                     layoutId='nav-pill'
-                    style={{ position: 'absolute', inset: 0, background: 'var(--accent)', borderRadius: 100, zIndex: -1 }}
+                    style={{ position: 'absolute', inset: 0, background: 'var(--accent)', borderRadius: 6, zIndex: -1 }}
                     transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                   />
                 )}

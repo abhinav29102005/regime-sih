@@ -48,13 +48,13 @@ export const fetchDistrictForecast = (lead: number = 24) => api.get<DistrictFore
 export const fetchVerificationSummary = (regime: string) => api.get<VerificationSummary>('/verification/summary', { params: { regime } }).then(r => r.data);
 
 export const REGIME_LABELS: Record<string, string> = {
-  active: '🌧️ Active Monsoon', break: '☀️ Break Monsoon',
-  depression: '🌀 Depression', western_disturbance: '❄️ Western Disturbance', normal: '🌤️ Normal',
+  active: 'Active Monsoon', break: 'Break Monsoon',
+  depression: 'Depression', western_disturbance: 'Western Disturbance', normal: 'Normal',
 };
 
 export const REGIME_COLORS: Record<string, string> = {
   active: '#4fc3f7', break: '#ff9800', depression: '#f44336',
-  western_disturbance: '#ab47bc', normal: '#4caf50',
+  western_disturbance: '#5c6bc0', normal: '#4caf50',
 };
 
 export default api;
