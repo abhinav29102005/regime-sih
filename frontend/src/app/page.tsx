@@ -18,7 +18,7 @@ export default function Dashboard() {
   const stats = forecasts ? {
     avgRaw: forecasts.reduce((s, f) => s + f.raw_precip_mm, 0) / forecasts.length,
     avgCorr: forecasts.reduce((s, f) => s + f.corrected_precip_mm, 0) / forecasts.length,
-    heavy: forecasts.filter(f => ["heavy", "very_heavy", "extremely_heavy"].includes(f.category)).length,
+    heavy: forecasts.filter(f => ["heavy", "very_heavy", "extremely_heavy"].includes(f.category.toLowerCase().replace(" rain", "").replace(" ", "_"))).length,
   } : null;
 
   return (
