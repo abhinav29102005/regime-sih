@@ -13,7 +13,7 @@ export default function LeadSwitcher({ lead, setLead }: { lead: number, setLead:
             onClick={() => setLead(l)}
             style={{
               position: 'relative', padding: '6px 16px', fontSize: '0.8rem', fontWeight: 600,
-              color: active ? '#fff' : 'var(--text-3)', background: 'transparent', border: 'none',
+              color: active ? 'var(--accent)' : 'var(--text-3)', background: 'transparent', border: 'none',
               cursor: 'pointer', outline: 'none', transition: 'color 0.2s', zIndex: 1
             }}
           >

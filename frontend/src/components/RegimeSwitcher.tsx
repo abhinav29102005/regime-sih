@@ -14,7 +14,7 @@ export default function RegimeSwitcher({ regime, setRegime }: { regime: string, 
             onClick={() => setRegime(r)}
             style={{
               position: "relative", padding: "8px 16px", fontSize: "0.8rem", fontWeight: active ? 600 : 500,
-              color: active ? "#fff" : "var(--text-3)", background: "transparent", border: "none",
+              color: active ? "var(--accent)" : "var(--text-3)", background: "transparent", border: "none",
               cursor: "pointer", outline: "none", transition: "color 0.2s", zIndex: 1, whiteSpace: "nowrap"
             }}
           >
