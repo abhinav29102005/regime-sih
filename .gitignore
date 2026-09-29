@@ -1,12 +1,35 @@
-venv/
-.venv/
+# Python
 **/__pycache__/
 **/*.pyc
+**/*.pyo
+*.egg-info/
+.venv/
+venv/
+
+# Environment & secrets
 **/.env
+*.pem
+
+# Data files (large, generated — not for git)
+data/raw/*.csv
+data/raw/*.zip
+data/raw/*.tif
+data/processed/*.csv
+data/processed/*.txt
+data/models/*.pkl
+
+# Node / Next.js
 **/node_modules/
 **/.next/
 **/build/
-**/*.pem
-**/*.csv
-**/*.zip
-**/*.tif
+**/.turbo/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

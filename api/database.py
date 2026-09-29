@@ -67,7 +67,6 @@ def fetch_regime_history(start: str, end: str) -> list[RegimeOutput]:
 
 def fetch_district_forecasts(lead_hours: int = 24) -> list[DistrictForecast]:
     """Fetch real ML forecasts from the database."""
-    regime = fetch_regime_current()
     try:
         client = get_db_client()
         rs = client.execute("SELECT * FROM district_forecasts")
@@ -83,8 +82,8 @@ def fetch_district_forecasts(lead_hours: int = 24) -> list[DistrictForecast]:
                 lead_hours=lead_hours,
                 raw_precip_mm=row[5],
                 corrected_precip_mm=row[6],
-                regime=regime.regime,
-                regime_confidence=regime.probabilities.get(regime.regime, 1.0),
+                regime=row[13] if len(row) > 13 else "normal",
+                regime_confidence=1.0,
                 heavy_rain_prob_65mm=row[7],
                 heavy_rain_prob_115mm=row[8],
                 category=row[9],

@@ -11,7 +11,7 @@ import requests
 import numpy as np
 import xarray as xr
 
-from ingestion.base import DataSourceAdapter
+from src.ingestion.base import DataSourceAdapter
 from shared.config import RAW_DIR
 
 logger = logging.getLogger(__name__)
