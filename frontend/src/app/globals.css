@@ -178,3 +178,14 @@ body {
 .custom-tooltip::before {
   border-top-color: rgba(255, 255, 255, 0.95) !important;
 }
+
+.empty-icon { display: none; }
+.high-risk-tooltip {
+  background: var(--red) !important; color: #fff !important;
+  border: 1px solid #991b1b !important; border-radius: 8px !important;
+  font-weight: 800 !important; text-align: center !important;
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.5) !important;
+  padding: 6px 10px !important;
+  opacity: 1 !important;
+}
+.high-risk-tooltip::before { border-top-color: var(--red) !important; }

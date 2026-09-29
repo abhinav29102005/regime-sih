@@ -1,6 +1,6 @@
 "use client";
 import React, { useMemo, useState, useEffect } from "react";
-import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
+import { MapContainer, TileLayer, GeoJSON, Marker, Tooltip } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { DistrictForecast } from "@/lib/api";
 import L from "leaflet";
@@ -101,9 +101,44 @@ export default function RainfallMap({ forecasts }: Props) {
     }
   };
 
+  
+  // Find top critical districts
+  const criticalDistricts = useMemo(() => {
+    return [...forecasts]
+      .filter(f => f.heavy_rain_prob_65mm !== null && f.heavy_rain_prob_65mm > 0.6)
+      .sort((a, b) => (b.heavy_rain_prob_65mm || 0) - (a.heavy_rain_prob_65mm || 0))
+      .slice(0, 5);
+  }, [forecasts]);
+
   return (
     <div style={{ position: "relative", width: "100%", height: "100%", minHeight: 500, borderRadius: 16, overflow: "hidden", background: "#f8fafc" }}>
       
+      
+      {/* AI Actionable Alerts Panel */}
+      {criticalDistricts.length > 0 && (
+        <div style={{ position: "absolute", top: 16, left: 16, zIndex: 999, background: "var(--glass-bg)", padding: "16px", borderRadius: "12px", backdropFilter: "blur(10px)", border: "1px solid rgba(239, 68, 68, 0.3)", color: "var(--text-1)", display: "flex", flexDirection: "column", gap: "10px", width: "260px", boxShadow: "0 8px 32px rgba(239, 68, 68, 0.15)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "var(--red)", fontWeight: 800, fontSize: "0.9rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+            <span style={{ fontSize: "1.2rem" }}>🚨</span> AI Actionable Alerts
+          </div>
+          <div style={{ fontSize: "0.75rem", color: "var(--text-2)", fontWeight: 600, lineHeight: 1.4 }}>
+            Disaster response staging recommended for the following districts:
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "4px" }}>
+            {criticalDistricts.map(d => (
+              <div key={d.district_id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(239, 68, 68, 0.1)", padding: "8px 10px", borderRadius: "8px", border: "1px solid rgba(239, 68, 68, 0.2)" }}>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: "0.8rem", color: "var(--red)" }}>{d.district_name}</div>
+                  <div style={{ fontSize: "0.7rem", color: "var(--text-3)", fontWeight: 600 }}>{d.state}</div>
+                </div>
+                <div style={{ fontWeight: 800, color: "var(--red)", fontSize: "0.95rem" }}>
+                  {((d.heavy_rain_prob_65mm || 0) * 100).toFixed(0)}%
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Metric Toggle UI */}
       <div style={{ position: "absolute", top: 16, right: 16, zIndex: 999, display: "flex", gap: "8px", background: "var(--glass-bg)", padding: "8px", borderRadius: "12px", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.1)" }}>
         <button 
@@ -162,6 +197,7 @@ export default function RainfallMap({ forecasts }: Props) {
           className="dark-tiles"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         />
+        
         {geoData && (
           <GeoJSON 
             key={metric}
@@ -170,6 +206,18 @@ export default function RainfallMap({ forecasts }: Props) {
             onEachFeature={onEachFeature}
           />
         )}
+        {/* Permanent Risk Labels on Map */}
+        {criticalDistricts.map(f => f.lat && f.lon ? (
+          <Marker key={`marker-${f.district_id}`} position={[f.lat, f.lon]} icon={L.divIcon({ className: "empty-icon", iconSize: [0,0] })}>
+             <Tooltip permanent direction="center" className="high-risk-tooltip">
+                <div style={{ textAlign: "center", lineHeight: "1.2" }}>
+                  <div style={{ fontSize: "0.65rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>{f.district_name}</div>
+                  <div style={{ fontSize: "1rem" }}>{((f.heavy_rain_prob_65mm || 0) * 100).toFixed(0)}%</div>
+                </div>
+             </Tooltip>
+          </Marker>
+        ) : null)}
+
       </MapContainer>
     </div>
   );
