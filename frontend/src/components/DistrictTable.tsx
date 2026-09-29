@@ -91,7 +91,7 @@ export default function DistrictTable({ forecasts }: { forecasts: DistrictForeca
                     <td>{f.wind_speed != null ? f.wind_speed.toFixed(1) : '-'}</td>
                     <td>
                       {f.heavy_rain_prob_65mm != null
-                        ? <span style={{ color: f.heavy_rain_prob_65mm > 0.5 ? 'var(--red)' : 'var(--text-2)', fontWeight: f.heavy_rain_prob_65mm > 0.5 ? 600 : 400 }}>
+                        ? <span style={{ color: f.heavy_rain_prob_65mm > 0.5 ? 'var(--red)' : 'var(--text-2)', fontWeight: f.heavy_rain_prob_65mm > 0.5 ? 700 : 600 }}>
                             {(f.heavy_rain_prob_65mm * 100).toFixed(0)}%
                           </span>
                         : <span style={{ color: 'var(--text-3)' }}>—</span>}
