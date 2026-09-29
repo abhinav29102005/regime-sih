@@ -5,7 +5,7 @@ Async, auto-generates OpenAPI schema for frontend type codegen.
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api.routes import regime, forecast, verification, districts
+from api.routes import regime, forecast, verification, districts, pipeline
 
 app = FastAPI(
     title="Regime-SIH API",
