@@ -31,7 +31,7 @@ export default function DistrictTable({ forecasts }: { forecasts: DistrictForeca
   return (
     <motion.div
       className="glass"
-      style={{ padding: 20, height: '100%', display: 'flex', flexDirection: 'column' }}
+      style={{ padding: 20, display: 'flex', flexDirection: 'column', minHeight: '100%' }}
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.2, duration: 0.5 }}
@@ -49,7 +49,7 @@ export default function DistrictTable({ forecasts }: { forecasts: DistrictForeca
         />
       </div>
 
-      <div style={{ overflow: 'auto', flex: 1, paddingRight: 4 }}>
+      <div style={{ paddingRight: 4 }}>
         <table className="data-tbl" style={{ minWidth: 800 }}>
           <thead>
             <tr>
@@ -76,6 +76,8 @@ export default function DistrictTable({ forecasts }: { forecasts: DistrictForeca
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
+                    whileHover={{ scale: 1.015, backgroundColor: 'rgba(0,100,255,0.03)', boxShadow: '0 4px 15px rgba(0,0,0,0.05)' }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                   >
                     <td style={{ fontWeight: 500 }}>{f.district_name}</td>
                     <td style={{ color: 'var(--text-2)' }}>{f.state}</td>

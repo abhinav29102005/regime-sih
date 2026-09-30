@@ -24,14 +24,16 @@ export default function Navbar() {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           
-          <div>
-            <div style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--accent)', letterSpacing: '-0.3px', lineHeight: 1.2 }}>
-              MeghDrishti
-            </div>
-            <div style={{ fontSize: '0.65rem', color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-              Vision into every cloud's regime.
-            </div>
-          </div>
+          <Link href="/" style={{ textDecoration: 'none', cursor: 'pointer' }}>
+            <motion.div whileHover={{ scale: 1.02 }} transition={{ type: 'spring', stiffness: 400, damping: 20 }}>
+              <div style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--accent)', letterSpacing: '-0.3px', lineHeight: 1.2 }}>
+                MeghDrishti
+              </div>
+              <div style={{ fontSize: '0.65rem', color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                Vision into every cloud's regime.
+              </div>
+            </motion.div>
+          </Link>
         </div>
 
         <nav style={{ display: 'flex', gap: 8, background: 'rgba(0,0,0,0.03)', padding: 6, borderRadius: 6, border: '1px solid rgba(0,0,0,0.05)' }}>
@@ -52,12 +54,7 @@ export default function Navbar() {
           })}
         </nav>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: '0.75rem', color: 'var(--text-3)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <div className='glow-dot' style={{ background: 'var(--green)', color: 'var(--green)' }} />
-            <span>API Online</span>
-          </div>
-        </div>
+
       </div>
     </header>
   );

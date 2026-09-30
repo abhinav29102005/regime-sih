@@ -19,7 +19,7 @@ export default function Districts() {
         <LeadSwitcher lead={lead} setLead={setLead} />
       </div>
       {isLoading ? <div className='skel' style={{ height: 600 }} /> : forecasts && (
-        <div style={{ height: 'calc(100vh - 200px)', minHeight: 600 }}>
+        <div style={{ width: '100%', paddingBottom: 60 }}>
           <DistrictTable forecasts={forecasts} />
         </div>
       )}

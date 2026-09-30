@@ -196,11 +196,7 @@ export default function RainfallMap({ forecasts }: Props) {
         style={{ height: "100%", width: "100%", background: "#f8fafc" }}
         zoomControl={false}
       >
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          className="dark-tiles"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        />
+        {/* TileLayer removed to strictly show correct Indian GeoJSON boundaries and hide other countries */}
         
         {geoData && (
           <GeoJSON 
